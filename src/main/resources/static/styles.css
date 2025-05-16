@@ -1,0 +1,268 @@
+/* ------------------------
+   GENERAL & RESET
+------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #2c3e50;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  padding: 30px 20px;
+}
+
+/* ------------------------
+   CONTAINER
+------------------------ */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.container:hover {
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* ------------------------
+   HEADINGS
+------------------------ */
+h1, h2 {
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  margin-bottom: 1rem;
+  color: #34495e;
+}
+
+/* ------------------------
+   FORM STYLING
+------------------------ */
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+form input[type="text"], form input[type="email"], form input[type="search"] {
+  flex: 1 1 200px;
+  padding: 14px 20px;
+  font-size: 1rem;
+  border: 2px solid #d1d8e0;
+  border-radius: 10px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  color: #34495e;
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="search"]:focus {
+  border-color: #2980b9;
+  outline: none;
+  box-shadow: 0 0 8px #3498db;
+}
+
+form button {
+  background: linear-gradient(45deg, #2980b9, #6dd5fa);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  padding: 14px 30px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 6px 15px rgba(41, 128, 185, 0.6);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+form button:hover {
+  background: linear-gradient(45deg, #6dd5fa, #2980b9);
+  box-shadow: 0 8px 25px rgba(41, 128, 185, 0.8);
+}
+
+/* ------------------------
+   TABLE STYLING
+------------------------ */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  font-size: 1rem;
+  color: #2c3e50;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+}
+
+thead tr {
+  background: linear-gradient(90deg, #2980b9 0%, #6dd5fa 100%);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  border-radius: 12px;
+  box-shadow: inset 0 4px 6px rgba(0,0,0,0.15);
+}
+
+thead th {
+  padding: 15px 20px;
+  text-align: left;
+}
+
+tbody tr {
+  background: #fefefe;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+tbody tr:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+tbody td {
+  padding: 15px 20px;
+  vertical-align: middle;
+}
+
+/* Rounded cells */
+tbody tr td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+tbody tr td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* ------------------------
+   BUTTONS IN TABLE
+------------------------ */
+tbody button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  color: #fff;
+  margin-right: 8px;
+}
+
+.issue-btn {
+  background: linear-gradient(45deg, #27ae60, #2ecc71);
+  box-shadow: 0 6px 15px rgba(39,174,96,0.7);
+}
+
+.issue-btn:hover {
+  background: linear-gradient(45deg, #2ecc71, #27ae60);
+  box-shadow: 0 8px 25px rgba(39,174,96,0.9);
+}
+
+.return-btn {
+  background: linear-gradient(45deg, #f39c12, #f1c40f);
+  color: #2c3e50;
+  box-shadow: 0 6px 15px rgba(243,156,18,0.7);
+}
+
+.return-btn:hover {
+  background: linear-gradient(45deg, #f1c40f, #f39c12);
+  box-shadow: 0 8px 25px rgba(243,156,18,0.9);
+}
+
+.edit-btn {
+  background: linear-gradient(45deg, #2980b9, #3498db);
+  box-shadow: 0 6px 15px rgba(41,128,185,0.7);
+}
+
+.edit-btn:hover {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  box-shadow: 0 8px 25px rgba(41,128,185,0.9);
+}
+
+.delete-btn {
+  background: linear-gradient(45deg, #c0392b, #e74c3c);
+  box-shadow: 0 6px 15px rgba(192,57,43,0.7);
+}
+
+.delete-btn:hover {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+  box-shadow: 0 8px 25px rgba(192,57,43,0.9);
+}
+
+/* ------------------------
+   SEARCH INPUTS
+------------------------ */
+#search-section {
+  margin-bottom: 35px;
+}
+
+#search-section input[type="text"] {
+  width: 220px;
+  padding: 12px 18px;
+  margin-right: 15px;
+  border-radius: 12px;
+  border: 2px solid #d1d8e0;
+  transition: border-color 0.3s ease;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  font-size: 1rem;
+}
+
+#search-section input[type="text"]:focus {
+  border-color: #2980b9;
+  outline: none;
+  box-shadow: 0 0 8px #3498db;
+}
+
+/* ------------------------
+   RESPONSIVE DESIGN
+------------------------ */
+@media (max-width: 900px) {
+  .container {
+    padding: 20px 25px;
+  }
+
+  form {
+    flex-direction: column;
+  }
+
+  form input[type="text"], form button {
+    width: 100%;
+  }
+
+  #search-section input[type="text"] {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  tbody td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+
+  tbody button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}

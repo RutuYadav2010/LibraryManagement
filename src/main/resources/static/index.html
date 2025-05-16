@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Library Management</title>
+</head>
+
+<body>
+    <h1>Library Management System</h1>
+    <section id="add-book-section">
+        <h2>Add Book</h2>
+        <form id="add-book-form">
+            <input type="text" id="title" placeholder="Title" required />
+            <input type="text" id="author" placeholder="Author" required />
+            <input type="text" id="genre" placeholder="Genre" required />
+            <button type="submit">Add Book</button>
+        </form>
+    </section>
+
+    <section id="search-section">
+        <h2>Search/Filter Books</h2>
+        <input type="text" id="search-title" placeholder="Search by Title" />
+        <input type="text" id="search-author" placeholder="Search by Author" />
+        <input type="text" id="search-genre" placeholder="Search by Genre" />
+        <button id="clear-filters">Clear Filters</button>
+    </section>
+
+    <section id="book-list-section">
+        <h2>Books Directory</h2>
+        <table id="books-table">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Edit Book</h3>
+            <form id="edit-book-form">
+                <input type="text" id="edit-title" placeholder="Title" required />
+                <input type="text" id="edit-author" placeholder="Author" required />
+                <input type="text" id="edit-genre" placeholder="Genre" required />
+                <button type="submit">Save changes</button>
+                <button type="button" id="cancel-edit">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/books';
+        let books = [];
+        let editBookId = null;
+
+        const addForm = document.getElementById('add-book-form');
+        const booksTableBody = document.querySelector(`#books-table tbody`);
+        const searchTitleInput = document.getElementById('search-title');
+        const searchAuthorInput = document.getElementById('search-author');
+        const searchGenreInput = document.getElementById('search-genre');
+        const clearFiltersBtn = document.getElementById('clear-filters');
+
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-book-form');
+        const editTitleInput = document.getElementById('edit-title');
+        const editAuthorInput = document.getElementById('edit-author');
+        const editGenreInput = document.getElementById('edit-genre');
+        const cancelEditBtn = document.getElementById('cancel-edit');
+
+        async function fetchBooks() {
+            try {
+                const res = await fetch(`${API_BASE}/all`);
+                if(!res.ok) throw new Error("Failed to fetch books");
+                books = await res.json();
+                renderBooks();
+            }
+            catch(err) {
+                alert("Error fetching books from server");
+                console.error(err);
+            }
+        }
+
+        function renderBooks() {
+        const titleFilter = searchTitleInput.value.trim().toLowerCase();
+        const authorFilter = searchAuthorInput.value.trim().toLowerCase();
+        const genreFilter = searchGenreInput.value.trim().toLowerCase();
+
+        booksTableBody.innerHTML = '';
+
+        const filtered = books.filter(book =>
+            (!titleFilter || book.title.toLowerCase().includes(titleFilter)) &&
+            (!authorFilter || book.author.toLowerCase().includes(authorFilter)) &&
+            (!genreFilter || book.genre.toLowerCase().includes(genreFilter))
+        );
+
+        if(filtered.length === 0) {
+            booksTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No books found</td><tr>';
+            return;
+        }
+
+        filtered.forEach(book => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${book.title}</td>
+                <td>${book.author}</td>
+                <td>${book.genre}</td>
+                <td>${book.issued ? 'Issued' : 'Available'}</td>
+                <td>
+                    ${book.issued? `<button data-id="${book.id}" class="return-btn">Return</button>` : `<button data-id="${book.id}" class="issue-btn">Issue</button>`}
+                    <button data-id="${book.id}" class="delete-btn">Delete</button>
+                    <button data-id="${book.id}" class="edit-btn">Edit</button>
+                </td>
+            `;
+
+            booksTableBody.appendChild(tr);
+        });
+      }
+
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newBook = {
+                title : addForm.title.value.trim(),
+                author : addForm.author.value.trim(),
+                genre : addForm.genre.value.trim(),
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/add`, {
+                    method: 'POST',
+                    headers: {'Content-Type' : 'application/json'},
+                    body: JSON.stringify(newBook),
+            });
+
+            if(!res.ok) throw new Error('Failed to add book');
+            addForm.reset();
+            await fetchBooks();
+            }
+            catch(err) {
+                alert('Error adding book');
+                console.error(err);
+            }
+        });
+
+        clearFiltersBtn.addEventListener('click', () => {
+            searchTitleInput.value = '';
+            searchAuthorInput.value = '';
+            searchGenreInput.value = '';
+            renderBooks();
+        });
+
+        [searchTitleInput, searchAuthorInput, searchGenreInput].forEach(input => {
+            input.addEventListener('input', renderBooks);
+        });
+
+        booksTableBody.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        if (!id) return;
+
+        if(e.target.classList.contains('issue-btn')) {
+            try {
+                const issuedTo = prompt("Enter the name of the person issuing the book:");
+                if (!issuedTo) return alert("Issuing cancelled: Name of issuer required");
+
+                const res = await fetch(`${API_BASE}/issue/${id}`, {
+                    method: 'PUT',
+                    headers:{'Content-Type' : 'application/json'},
+                    body: JSON.stringify({ issuedTo })
+                });
+
+                if(!res.ok) throw new Error('Failed to issue Book');
+                await fetchBooks();
+            }
+
+            catch(err) {
+                alert("Error issuing book");
+                console.error(err);
+            }
+        }
+
+        else if(e.target.classList.contains('return-btn')) {
+            try {
+                const res = await fetch(`${API_BASE}/return/${id}`, {
+                    method: 'PUT',
+                    headers:{'Content-Type' : 'application/json'},
+                    body:JSON.stringify({}),
+                });
+
+                if(!res.ok) throw new Error('Failed to return book');
+                await fetchBooks();
+            }
+            catch(err) {
+                alert('Error returning book');
+                console.error(err);
+            }
+        }
+
+        else if(e.target.classList.contains('delete-btn')) {
+            if (!confirm('Are you sure you want to delete this book?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/delete-book`, {
+                    method: 'DELETE',
+                    headers:{'Content-Type' : 'application/json'},
+                    body:JSON.stringify({id: parseInt(id)}),
+                });
+
+                if(!res.ok) throw new Error('Failed to delete this book');
+                await fetchBooks();
+            }
+            catch(err) {
+                alert('Error deleting book');
+                console.error(err);
+            }
+        }
+
+        else if(e.target.classList.contains('edit-btn')) {
+            editBookId = parseInt(id);
+            const book = books.find(b => b.id === editBookId);
+            if(!book) return alert('Book not found');
+
+            editTitleInput.value = book.title;
+            editAuthorInput.value = book.author;
+            editGenreInput.value = book.genre;
+
+            editModal.classList.remove('hidden');
+        }
+      });
+
+        cancelEditBtn.addEventListener('click', () => {
+            editModal.classList.add('hidden');
+            editBookId = null;
+        });
+
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!editBookId) return;
+
+            const updatedBook = {
+                id: editBookId,
+                title: editTitleInput.value.trim(),
+                author: editAuthorInput.value.trim(),
+                genre: editGenreInput.value.trim(),
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/update-book/${editBookId}`, {
+                    method: 'PUT',
+                    headers:{'Content-Type' : 'application/json'},
+                    body:JSON.stringify(updatedBook),
+                });
+
+                if(!res.ok) throw new Error('Failed to update book');
+                editModal.classList.add('hidden');
+                editBookId = null;
+                await fetchBooks();
+            }
+
+            catch(err) {
+                alert('Error updating book');
+                console.error(err);
+            }
+        });
+
+      fetchBooks();
+
+    </script>
+</body>
+</html>
